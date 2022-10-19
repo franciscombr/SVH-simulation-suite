@@ -1,0 +1,21 @@
+controller_list:
+  - name: ur5_svh_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: True
+    joints:
+      - shoulder_pan_joint
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+      - right_hand_Thumb_Opposition
+      - right_hand_Thumb_Flexion
+      - right_hand_Index_Finger_Proximal
+      - right_hand_Index_Finger_Distal
+      - right_hand_Middle_Finger_Proximal
+      - right_hand_Middle_Finger_Distal
+      - right_hand_Finger_Spread
+      - right_hand_Pinky
+      - right_hand_Ring_Finger

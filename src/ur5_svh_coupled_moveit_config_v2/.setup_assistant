@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: ur5_svh_coupled
+    relative_path: urdf/svh-ur5.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/svh.srdf
+  CONFIG:
+    author_name: Francisco Ribeiro
+    author_email: franciscombr17@gmail.com
+    generated_timestamp: 1656944924

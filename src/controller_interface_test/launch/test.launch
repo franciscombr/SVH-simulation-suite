@@ -1,0 +1,20 @@
+<launch>
+    
+  <rosparam file="$(find controller_interface_test)/config/controllers.yaml" command="load"/>
+   <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find mujoco_ur5_svh_coupled)/urdf/svh_ur5_mujoco.urdf.xacro'"/>
+
+
+  <node name="controller_interface_test" pkg="controller_interface_test" type="controller_interface_test_node" output="screen"/>
+
+  <!--
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
+    -->
+    
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
+        args="
+            /MyControllerInterface/joints_update
+            /MyControllerInterface/JointC_PositionController
+        "/> 
+
+
+</launch>

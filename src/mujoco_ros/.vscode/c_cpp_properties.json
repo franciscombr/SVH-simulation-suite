@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/etc/mujoco-2.2.1/include/mujoco",
+                "/etc/mujoco-2.2.1/include",
+                "/opt/ros/noetic/include/ros"
+            ],
+            "defines": [],
+            "compilerPath": "/bin/cpp",
+            "cStandard": "c17",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-clang-x64"
+        }
+    ],
+    "version": 4
+}

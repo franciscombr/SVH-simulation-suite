@@ -1,0 +1,26 @@
+MyControllerInterface:
+
+  # Publish all joint states
+  joints_update:
+      type: joint_state_controller/JointStateController
+      publish_rate: 50  
+
+
+  JointC_PositionController:
+      type: "position_controllers/JointTrajectoryController"   # Since JointC uses position interface this controller type is  used 
+      joints: 
+        - shoulder_pan_joint
+        - shoulder_lift_joint
+        - elbow_joint
+        - wrist_1_joint
+        - wrist_2_joint
+        - wrist_3_joint
+        - right_hand_Thumb_Opposition
+        - right_hand_Thumb_Flexion
+        - right_hand_Index_Finger_Proximal
+        - right_hand_Index_Finger_Distal
+        - right_hand_Middle_Finger_Proximal
+        - right_hand_Middle_Finger_Distal
+        - right_hand_Finger_Spread
+        - right_hand_Pinky
+        - right_hand_Ring_Finger

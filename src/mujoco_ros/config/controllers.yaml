@@ -1,0 +1,12 @@
+MyControllerInterface:
+
+  # Publish all joint states
+  joints_update:
+      type: joint_state_controller/JointStateController
+      publish_rate: 50  
+
+
+  JointC_PositionController:
+      type: "position_controllers/JointTrajectoryController"   # Since JointC uses position interface this controller type is  used 
+      joints: 
+        - shoulder_pan_joint

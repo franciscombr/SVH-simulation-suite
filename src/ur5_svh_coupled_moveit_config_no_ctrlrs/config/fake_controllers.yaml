@@ -1,0 +1,22 @@
+controller_list:
+  - name: fake_ur5_svh_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - shoulder_pan_joint
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+      - right_hand_Thumb_Opposition
+      - right_hand_Thumb_Flexion
+      - right_hand_Index_Finger_Proximal
+      - right_hand_Index_Finger_Distal
+      - right_hand_Middle_Finger_Proximal
+      - right_hand_Middle_Finger_Distal
+      - right_hand_Finger_Spread
+      - right_hand_Pinky
+      - right_hand_Ring_Finger
+initial:  # Define initial robot poses per group
+  - group: ur5_svh
+    pose: home

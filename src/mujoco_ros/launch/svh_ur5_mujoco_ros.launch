@@ -1,0 +1,14 @@
+<launch>
+    <rosparam file="$(find mujoco_ros)/config/controllers.yaml" command="load"/>
+    <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find mujoco_ur5_svh_coupled)/urdf/svh_ur5_mujoco.urdf.xacro'"/>
+
+    <node pkg="mujoco_ros" name="mujoco_ros" type="mujoco_ros_node" output="screen">
+        <param name="model_file_path" value="$(find mujoco_ur5_svh_coupled)/urdf/svh_ur5_mujoco.xml"/>
+         <param name="config_file_path" value="$(find mujoco_ros)/config/svh_ur5.yaml" />
+         <param name="viz" value="true" />
+    </node>
+
+    
+       
+
+</launch>

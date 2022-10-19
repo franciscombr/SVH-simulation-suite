@@ -1,0 +1,323 @@
+<mujoco model="svh">
+  <compiler angle="radian" coordinate="local" inertiafromgeom="true" meshdir="/home/francisco/catkin_ws/src/mujoco_ur5_svh_coupled/meshes/"/>
+  <option integrator="RK4" timestep="0.001" collision= "all"/>
+  <size njmax="500" nconmax="100"/>
+  <default>
+        <joint armature="1" damping="1" limited="true"/>
+        <geom conaffinity="0" condim="3" density="5.0" friction="1 0.5 0.5" margin="0.01" rgba="0.8 0.6 0.4 1"/>
+    </default>
+  <asset>
+  	<texture builtin="gradient" height="100" rgb1="1 1 1" rgb2="0 0 0" type="skybox" width="100"/>
+    <texture builtin="flat" height="1278" mark="cross" markrgb="1 1 1" name="texgeom" random="0.01" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" type="cube" width="127"/>
+    <texture builtin="flat" height="100" name="texplane" rgb1="0.54 0.23 0"  type="2d" width="100"/>
+    <material name="MatPlane" reflectance="0" shininess="0.5" specular="1" texrepeat="60 60" texture="texplane"/>
+    <material name="geom" texture="texgeom" texuniform="true"/>
+    <mesh name="base" file="base.stl"/>
+    <mesh name="shoulder" file="shoulder.stl"/>
+    <mesh name="upperarm" file="upperarm.stl"/>
+    <mesh name="forearm" file="forearm.stl"/>
+    <mesh name="wrist1" file="wrist1.stl"/>
+    <mesh name="wrist2" file="wrist2.stl"/>
+    <mesh name="wrist3" file="wrist3.stl"/>
+    <mesh name="base10" file="base10.stl"/>
+    <mesh name="h10" file="h10.stl"/>
+    <mesh name="h11" file="h11.stl"/>
+    <mesh name="d10" file="d10.stl"/>
+    <mesh name="d11" file="d11.stl"/>
+    <mesh name="d12" file="d12.stl"/>
+    <mesh name="d13" file="d13.stl"/>
+    <mesh name="f10" file="f10.stl"/>
+    <mesh name="f11" file="f11.stl"/>
+    <mesh name="f12" file="f12.stl"/>
+    <mesh name="f13" file="f13.stl"/>
+    <mesh name="f20" file="f20.stl"/>
+    <mesh name="f21" file="f21.stl"/>
+    <mesh name="f22" file="f22.stl"/>
+    <mesh name="f23" file="f23.stl"/>
+    <mesh name="f30" file="f30.stl"/>
+    <mesh name="f31" file="f31.stl"/>
+    <mesh name="f32" file="f32.stl"/>
+    <mesh name="f33" file="f33.stl"/>
+    <mesh name="f40" file="f40.stl"/>
+    <mesh name="f41" file="f41.stl"/>
+    <mesh name="f42" file="f42.stl"/>
+    <mesh name="f43" file="f43.stl"/>
+  </asset>
+  <worldbody>
+    <light cutoff="100" diffuse="1 1 1" dir="-0 0 -1.3" directional="true" exponent="1" pos="0 0 1.3" specular=".1 .1 .1"/>
+    <geom conaffinity="1" condim="4" material="MatPlane" name="floor" pos="0 0 0" rgba="0.8 0.9 0.8 1" size="1 1 1" type="plane"/>
+    
+    <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="base"/>
+    <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="base"/>
+    <body name="shoulder_link" pos="0 0 0.089159">
+      <inertial pos="0 0 0" mass="3.7" diaginertia="0.0102675 0.0102675 0.00666"/>
+      <joint name="shoulder_pan_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-3.14159 3.14159"/>
+      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="shoulder"/>
+      <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="shoulder"/>
+      <body name="upper_arm_link" pos="0 0.13585 0" quat="0.707107 0 0.707107 0">
+        <inertial pos="0 0 0.28" mass="8.393" diaginertia="0.226891 0.226891 0.0151074"/>
+        <joint name="shoulder_lift_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159"/>
+        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="upperarm"/>
+        <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="upperarm"/>
+        <body name="forearm_link" pos="0 -0.1197 0.425">
+          <inertial pos="0 0 0.196125" mass="2.275" diaginertia="0.0312168 0.0312168 0.004095"/>
+          <joint name="elbow_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159"/>
+          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="forearm"/>
+          <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="forearm"/>
+          <body name="wrist_1_link" pos="0 0 0.39225" quat="0.707107 0 0.707107 0">
+            <inertial pos="0 0.093 0" mass="1.219" diaginertia="0.0025599 0.0025599 0.0021942"/>
+            <joint name="wrist_1_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159"/>
+            <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="wrist1"/>
+            <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="wrist1"/>
+            <body name="wrist_2_link" pos="0 0.093 0">
+              <inertial pos="0 0 0.09465" mass="1.219" diaginertia="0.0025599 0.0025599 0.0021942"/>
+              <joint name="wrist_2_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-3.14159 3.14159"/>
+              <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="wrist2"/>
+              <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="wrist2"/>
+              <body name="wrist_3_link" pos="0 0 0.09465">
+                <inertial pos="0 0.0813708 0.00263761" quat="0.656611 0.754229 0 0" mass="0.2489" diaginertia="0.6004 0.600398 0.600134"/>
+                <joint name="wrist_3_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159"/>
+                <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" rgba="0.7 0.7 0.7 1" mesh="wrist3"/>
+                <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="wrist3"/>
+                <geom size="0.005 0.005 0.005" pos="0 0.0723 0" quat="0.707107 0 0 0.707107" type="box"/>
+                <geom pos="0 0.0823 0" quat="0.707107 -0.707107 0 0" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="base10"/>
+                <geom pos="0 0.0823 0" quat="0.707107 -0.707107 0 0" type="mesh" mesh="base10"/>
+                <geom pos="0 0.1143 0" quat="0.707107 -0.707107 0 0" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="h10"/>
+                <geom pos="0 0.1143 0" quat="0.707107 -0.707107 0 0" type="mesh" mesh="h10"/>
+                <geom pos="-1.27248e-06 0.224301 0.02634" quat="0.707107 -6.81133e-05 0 0.707107" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f20"/>
+                <geom pos="-1.27248e-06 0.224301 0.02634" quat="0.707107 -6.81133e-05 0 0.707107" type="mesh" mesh="f20"/>
+                <body name="right_hand_z" pos="-0.0169 0.1143 -0.01313" quat="0.430402 -0.560942 0.561029 0.430516">
+                  <inertial pos="0 0 0.02298" mass="0.02" diaginertia="0.200011 0.200011 0.2"/>
+                  <joint name="right_hand_Thumb_Opposition" pos="0 0 0" axis="0 0 -1" limited="true" range="0 0.9879" damping="0" frictionloss="0"/>
+                  <geom pos="0 0 0.02442" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="d10"/>
+                  <geom pos="0 0 0.02442" type="mesh" mesh="d10"/>
+                  <body name="right_hand_a" pos="0 0 0.04596" quat="0.329798 0.625462 0.329771 0.625525">
+                    <inertial pos="0 0 0" mass="0.078" diaginertia="0.149822 0.115536 0.115536"/>
+                    <joint name="right_hand_Thumb_Flexion" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.9704" damping="0" frictionloss="0"/>
+                    <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="d11"/>
+                    <geom type="mesh" mesh="d11"/>
+                    <body name="right_hand_b" pos="0.0485 0 0">
+                      <inertial pos="0 0 0" mass="0.0325" diaginertia="0.062426 0.0373067 0.0373067"/>
+                      <joint name="right_hand_j3" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.98506" damping="0" frictionloss="0"/>
+                      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="d12"/>
+                      <geom type="mesh" mesh="d12"/>
+                      <body name="right_hand_c" pos="0.03 0 0">
+                        <inertial pos="0 0 0" mass="0.2" diaginertia="0.38416 0.208747 0.208747"/>
+                        <joint name="right_hand_j4" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.406" damping="0" frictionloss="0"/>
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="d13"/>
+                        <geom type="mesh" mesh="d13"/>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+                <body name="right_hand_virtual_l" pos="-0.025 0.2243 0.01313" quat="0.707107 -6.81133e-05 0 0.707107">
+                  <inertial pos="0 0 0" mass="0.01" diaginertia="0.1 0.1 0.1"/>
+                  <joint name="right_hand_index_spread" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.28833" damping="0" frictionloss="0"/>
+                  <geom pos="0 0 0.01321" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f10"/>
+                  <geom pos="0 0 0.01321" type="mesh" mesh="f10"/>
+                  <body name="right_hand_l" pos="0 0 0" quat="0.707141 -0.707073 0 0">
+                    <inertial pos="0 0 0" mass="0.2" diaginertia="0.38416 0.34208 0.34208"/>
+                    <joint name="right_hand_Index_Finger_Proximal" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.79849" damping="0" frictionloss="0"/>
+                    <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f11"/>
+                    <geom type="mesh" mesh="f11"/>
+                    <body name="right_hand_p" pos="0.04804 0 0">
+                      <inertial pos="0 0 0" mass="0.2" diaginertia="0.38416 0.258747 0.258747"/>
+                      <joint name="right_hand_Index_Finger_Distal" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.334" damping="0" frictionloss="0"/>
+                      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f12"/>
+                      <geom type="mesh" mesh="f12"/>
+                      <body name="right_hand_t" pos="0.026 0 0">
+                        <inertial pos="0 0 0" mass="0.2" diaginertia="0.38416 0.22958 0.22958"/>
+                        <joint name="right_hand_j14" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.394" damping="0" frictionloss="0"/>
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f13"/>
+                        <geom type="mesh" mesh="f13"/>
+                        <site name="index_sensor_zone" pos="0.02 0 0" type="sphere" size=" 0.009 0.009 0.09 "/>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+                <body name="right_hand_k" pos="0 0.2243 0.01313" quat="0.499976 -0.500024 -0.499976 0.500024">
+                  <inertial pos="0 0 0" quat="0.5 0.5 0.5 0.5" mass="0.078" diaginertia="0.154536 0.154536 0.149822"/>
+                  <joint name="right_hand_Middle_Finger_Proximal" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.79849" damping="0" frictionloss="0"/>
+                  <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f21"/>
+                  <geom type="mesh" mesh="f21"/>
+                  <body name="right_hand_o" pos="0.05004 0 0">
+                    <inertial pos="0 0 0" mass="0.0325" diaginertia="0.062426 0.0420463 0.0420463"/>
+                    <joint name="right_hand_Middle_Finger_Distal" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.334" damping="0" frictionloss="0"/>
+                    <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f22"/>
+                    <geom type="mesh" mesh="f22"/>
+                    <body name="right_hand_s" pos="0.032 0 0">
+                      <inertial pos="0 0 0" mass="0.0195" diaginertia="0.0374556 0.022384 0.022384"/>
+                      <joint name="right_hand_j15" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.334" damping="0" frictionloss="0"/>
+                      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f23"/>
+                      <geom type="mesh" mesh="f23"/>
+                    </body>
+                  </body>
+                </body>
+                <body name="right_hand_e2" pos="0.0184 0.1518 0.00713" quat="0.707107 -0.707107 0 0">
+                  <inertial pos="0 -0.0048 0" quat="0.707107 0.707107 0 0" mass="0.05" diaginertia="0.5 0.5 0.5"/>
+                  <joint name="right_hand_j5" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.98786" damping="0" frictionloss="0"/>
+                  <geom pos="-0.0007 0 -0.01002" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="h11"/>
+                  <geom pos="-0.0007 0 -0.01002" type="mesh" mesh="h11"/>
+                  <body name="right_hand_virtual_i" pos="0.025355 -0.006 0.056" quat="0.500048 -0.5 -0.5 -0.499952">
+                    <inertial pos="0 0 0" mass="0.01" diaginertia="0.1 0.1 0.1"/>
+                    <joint name="right_hand_Finger_Spread" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.5829" />
+                    <geom pos="0 0 -0.01321" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f40"/>
+                    <geom pos="0 0 -0.01321" type="mesh" mesh="f40"/>
+                    <body name="right_hand_i" pos="0 0 0" quat="0.707141 0.707073 0 0">
+                      <inertial pos="0 0 0" quat="0.5 0.5 0.5 0.5" mass="0.078" diaginertia="0.154536 0.154536 0.149822"/>
+                      <joint name="right_hand_Pinky" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.98175" damping="0" frictionloss="0"/>
+                      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f41"/>
+                      <geom type="mesh" mesh="f41"/>
+                      <body name="right_hand_m" pos="0.04454 0 0">
+                        <inertial pos="0 0 0" mass="0.0325" diaginertia="0.062426 0.0420463 0.0420463"/>
+                        <joint name="right_hand_j13" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.334" damping="0" frictionloss="0"/>
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f42"/>
+                        <geom type="mesh" mesh="f42"/>
+                        <body name="right_hand_q" pos="0.022 0 0">
+                          <inertial pos="0 0 0" mass="0.0195" diaginertia="0.0374556 0.022384 0.022384"/>
+                          <joint name="right_hand_j17" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.3971" damping="0" frictionloss="0"/>
+                          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f43"/>
+                          <geom type="mesh" mesh="f43"/>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                  <body name="right_hand_virtual_j" pos="0.003855 -0.006 0.0655" quat="0.500048 -0.5 -0.5 -0.499952">
+                    <inertial pos="0 0 0" mass="0.01" diaginertia="0.1 0.1 0.1"/>
+                    <joint name="right_hand_ring_spread" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.28833" damping="0" frictionloss="0"/>
+                    <geom pos="0 0 -0.01321" type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f30"/>
+                    <geom pos="0 0 -0.01321" type="mesh" mesh="f30"/>
+                    <body name="right_hand_j" pos="0 0 0" quat="0.707141 0.707073 0 0">
+                      <inertial pos="0 0 0" quat="0.5 0.5 0.5 0.5" mass="0.078" diaginertia="0.154536 0.154536 0.149822"/>
+                      <joint name="right_hand_Ring_Finger" pos="0 0 0" axis="0 0 1" limited="true" range="0 0.98175" damping="0" frictionloss="0"/>
+                      <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f31"/>
+                      <geom type="mesh" mesh="f31"/>
+                      <body name="right_hand_n" pos="0.05004 0 0">
+                        <inertial pos="0 0 0" mass="0.0325" diaginertia="0.062426 0.0420463 0.0420463"/>
+                        <joint name="right_hand_j12" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.334" damping="0" frictionloss="0"/>
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f32"/>
+                        <geom type="mesh" mesh="f32"/>
+                        <body name="right_hand_r" pos="0.032 0 0">
+                          <inertial pos="0 0 0" mass="0.0195" diaginertia="0.0374556 0.022384 0.022384"/>
+                          <joint name="right_hand_j16" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.395" damping="0" frictionloss="0"/>
+                          <geom type="mesh" contype="0" conaffinity="0" group="1" density="0" mesh="f33"/>
+                          <geom type="mesh" mesh="f33"/>
+                        </body>
+                      </body>
+                    </body>
+                  </body>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+ 
+
+  <!--
+  <actuator>
+  	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="shoulder_pan_joint" gear="1"/>
+  	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="shoulder_lift_joint" gear="1"/>
+  	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="elbow_joint" gear="1"/>
+  	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="wrist_1_joint" gear="1"/>
+  	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="wrist_2_joint" gear="1"/>
+  	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="wrist_3_joint" gear="1"/>
+  	<motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="right_hand_Thumb_Opposition" gear="100"/>
+  </actuator>
+  -->
+
+
+  <actuator>
+
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="shoulder_pan_joint"                joint="shoulder_pan_joint"                gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="shoulder_lift_joint"               joint="shoulder_lift_joint"               gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="elbow_joint"                       joint="elbow_joint"                       gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="wrist_1_joint"                     joint="wrist_1_joint"                     gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="wrist_2_joint"                     joint="wrist_2_joint"                     gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="wrist_3_joint"                     joint="wrist_3_joint"                     gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="right_hand_Thumb_Opposition"       joint="right_hand_Thumb_Opposition"       gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="right_hand_Thumb_Flexion"          joint="right_hand_Thumb_Flexion"          gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="right_hand_Index_Finger_Proximal"  joint="right_hand_Index_Finger_Proximal"  gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="right_hand_Index_Finger_Distal"    joint="right_hand_Index_Finger_Distal"    gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="right_hand_Middle_Finger_Distal"   joint="right_hand_Middle_Finger_Distal"   gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="right_hand_Middle_Finger_Proximal" joint="right_hand_Middle_Finger_Proximal" gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="right_hand_Finger_Spread"          joint="right_hand_Finger_Spread"          gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="right_hand_Pinky"                  joint="right_hand_Pinky"                  gear="1"/>
+    <motor ctrllimited="true" ctrlrange="-100 100"      name="right_hand_Ring_Finger"            joint="right_hand_Ring_Finger"            gear="1"/>
+
+    <!--
+    <position ctrllimited="true" ctrlrange="-3.141592653589793 3.141592653589793" name="shoulder_pan_joint"                joint="shoulder_pan_joint"                kp="5000"/>
+    <position ctrllimited="true" ctrlrange="-3.141592653589793 3.141592653589793" name="shoulder_lift_joint"               joint="shoulder_lift_joint"               kp="5000"/>
+    <position ctrllimited="true" ctrlrange="-3.141592653589793 3.141592653589793" name="elbow_joint"                       joint="elbow_joint"                       kp="10000"/>
+    <position ctrllimited="true" ctrlrange="-3.141592653589793 3.141592653589793" name="wrist_1_joint"                     joint="wrist_1_joint"                     kp="1500"/>
+    <position ctrllimited="true" ctrlrange="-3.141592653589793 3.141592653589793" name="wrist_2_joint"                     joint="wrist_2_joint"                     kp="1000"/>
+    <position ctrllimited="true" ctrlrange="-3.141592653589793 3.141592653589793" name="wrist_3_joint"                     joint="wrist_3_joint"                     kp="1000"/>
+    
+    <position ctrllimited="true" ctrlrange="0.0 0.9879"                           name="right_hand_Thumb_Opposition"       joint="right_hand_Thumb_Opposition"       kp="60"/>
+    <position ctrllimited="true" ctrlrange="0.0 0.9704"                           name="right_hand_Thumb_Flexion"          joint="right_hand_Thumb_Flexion"          kp="60"/>
+    <position ctrllimited="true" ctrlrange="0.0 0.79849"                          name="right_hand_Index_Finger_Proximal"  joint="right_hand_Index_Finger_Proximal"  kp="80"/>
+    <position ctrllimited="true" ctrlrange="0.0 1.334"                            name="right_hand_Index_Finger_Distal"    joint="right_hand_Index_Finger_Distal"    kp="80"/>
+    <position ctrllimited="true" ctrlrange="0.0 1.334"                            name="right_hand_Middle_Finger_Distal"   joint="right_hand_Middle_Finger_Distal"   kp="70"/>
+    <position ctrllimited="true" ctrlrange="0.0 0.79849"                          name="right_hand_Middle_Finger_Proximal" joint="right_hand_Middle_Finger_Proximal" kp="70"/>
+    <position ctrllimited="true" ctrlrange="0.0 0.5829"                           name="right_hand_Finger_Spread"          joint="right_hand_Finger_Spread"          kp="100" />
+    <position ctrllimited="true" ctrlrange="0.0 0.98175"                          name="right_hand_Pinky"                  joint="right_hand_Pinky"                  kp="70"/>
+    <position ctrllimited="true" ctrlrange="0.0 0.98175"                          name="right_hand_Ring_Finger"            joint="right_hand_Ring_Finger"            kp="70"/>
+
+    -->
+    <!--
+    <velocity name="v_shoulder_pan_joint"                joint="shoulder_pan_joint"                kv="100"/>
+    <velocity name="v_shoulder_lift_joint"               joint="shoulder_lift_joint"               kv="250"/>
+    <velocity name="v_elbow_joint"                       joint="elbow_joint"                       kv="50"/>
+    <velocity name="v_wrist_1_joint"                     joint="wrist_1_joint"                     kv="10"/>
+    <velocity name="v_wrist_2_joint"                     joint="wrist_2_joint"                     kv="450"/>
+    <velocity name="v_wrist_3_joint"                     joint="wrist_3_joint"                     kv="10"/>
+    
+    <velocity name="v_right_hand_Thumb_Opposition"       joint="right_hand_Thumb_Opposition"       kv="20"/>
+    <velocity name="v_right_hand_Thumb_Flexion"          joint="right_hand_Thumb_Flexion"          kv="27"/>
+    <velocity name="v_right_hand_Index_Finger_Proximal"  joint="right_hand_Index_Finger_Proximal"  kv="27"/>
+    <velocity name="v_right_hand_Index_Finger_Distal"    joint="right_hand_Index_Finger_Distal"    kv="20"/>
+    <velocity name="v_right_hand_Middle_Finger_Distal"   joint="right_hand_Middle_Finger_Distal"   kv="20"/>
+    <velocity name="v_right_hand_Middle_Finger_Proximal" joint="right_hand_Middle_Finger_Proximal" kv="25"/>
+    <velocity name="v_right_hand_Finger_Spread"          joint="right_hand_Finger_Spread"          kv="30" />
+    <velocity name="v_right_hand_Pinky"                  joint="right_hand_Pinky"                  kv="23"/>
+    <velocity name="v_right_hand_Ring_Finger"            joint="right_hand_Ring_Finger"            kv="23"/>
+    -->
+    
+
+  </actuator>
+
+  
+  <equality>
+  	<joint joint2="right_hand_Thumb_Opposition"     joint1="right_hand_j5" polycoef="0 1 0 0 0" active="true" name="equality_constraint" />
+    <joint joint2="right_hand_Thumb_Flexion"        joint1="right_hand_j3" polycoef="0 1.01511 0 0 0" active="true" name="equality_constraint2" />
+    <joint joint2="right_hand_Thumb_Flexion"        joint1="right_hand_j4" polycoef="0 1.44889 0 0 0" active="true" name="equality_constraint3" />
+    <joint joint2="right_hand_Index_Finger_Distal"  joint1="right_hand_j14" polycoef="0 1.0450 0 0 0" active="true" name="equality_constraint4" />
+    <joint joint2="right_hand_Middle_Finger_Distal" joint1="right_hand_j15" polycoef="0 1.0454 0 0 0" active="true" name="equality_constraint5" />
+    <joint joint2="right_hand_Ring_Finger"          joint1="right_hand_j12" polycoef="0 1.3588 0 0 0" active="true" name="equality_constraint6" />
+    <joint joint2="right_hand_Ring_Finger"          joint1="right_hand_j16" polycoef="0 1.42093 0 0 0" active="true" name="equality_constraint7" />
+    <joint joint2="right_hand_Pinky"                joint1="right_hand_j13" polycoef="0 1.35880 0 0 0" active="true" name="equality_constraint8" />
+    <joint joint2="right_hand_Pinky"                joint1="right_hand_j17" polycoef="0 1.42307 0 0 0" active="true" name="equality_constraint9" />
+    <joint joint2="right_hand_Finger_Spread"        joint1="right_hand_ring_spread" polycoef="0 0.5 0 0 0" active="true" name="equality_constraint10"  />
+    <joint joint2="right_hand_Finger_Spread"        joint1="right_hand_index_spread" polycoef="0 0.5 0 0 0" active="true" name="equality_constraint11"/>
+    
+  </equality>
+
+
+  <worldbody>
+   
+    <body name="object" pos="0 0.8 1">
+      <freejoint/>
+      <geom conaffinity="1" type="ellipsoid" size="0.03 0.04 0.02" rgba="0.5 0.7 0.5 1" condim="4" priority="1"
+          friction="0.5 0.01 0.003"/>
+    </body>
+  </worldbody>
+  
+  <sensor>
+  	<touch name="index_sensor" site="index_sensor_zone"/>
+  </sensor>
+
+  
+  
+</mujoco>

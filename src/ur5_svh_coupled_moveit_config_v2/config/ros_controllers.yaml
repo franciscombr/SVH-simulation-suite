@@ -1,0 +1,94 @@
+ur5_svh_controller:
+  type: effort_controllers/JointTrajectoryController
+  joints:
+    - shoulder_pan_joint
+    - shoulder_lift_joint
+    - elbow_joint
+    - wrist_1_joint
+    - wrist_2_joint
+    - wrist_3_joint
+    - right_hand_Thumb_Opposition
+    - right_hand_Thumb_Flexion
+    - right_hand_Index_Finger_Proximal
+    - right_hand_Index_Finger_Distal
+    - right_hand_Middle_Finger_Proximal
+    - right_hand_Middle_Finger_Distal
+    - right_hand_Finger_Spread
+    - right_hand_Pinky
+    - right_hand_Ring_Finger
+  gains:
+    shoulder_pan_joint:
+      p: 5000
+      d: 100
+      i: 0.01
+      i_clamp: 100
+    shoulder_lift_joint:
+      p: 5000
+      d: 250
+      i: 200
+      i_clamp: 100
+    elbow_joint:
+      p: 10000
+      d: 50
+      i: 0.01
+      i_clamp: 100
+    wrist_1_joint:
+      p: 1500
+      d: 10
+      i: 20
+      i_clamp: 100
+    wrist_2_joint:
+      p: 1000
+      d: 450
+      i: 0.1
+      i_clamp: 100
+    wrist_3_joint:
+      p: 1000
+      d: 10
+      i: 0.1
+      i_clamp: 100
+    right_hand_Thumb_Opposition:
+      p: 60
+      d: 20
+      i: 100
+      i_clamp: 0.2
+    right_hand_Thumb_Flexion:
+      p: 60
+      d: 27
+      i: 100
+      i_clamp: 0.2
+    right_hand_Index_Finger_Proximal:
+      p: 80
+      d: 27
+      i: 100
+      i_clamp: 0.2 
+    right_hand_Index_Finger_Distal:
+      p: 80
+      d: 20
+      i: 100
+      i_clamp: 0.2 
+    right_hand_Middle_Finger_Proximal:
+      p: 70
+      d: 25
+      i: 120
+      i_clamp: 0.2 
+    right_hand_Middle_Finger_Distal:
+      p: 70
+      d: 18
+      i: 100
+      i_clamp: 0.2 
+    right_hand_Finger_Spread:
+      p: 100
+      d: 30
+      i: 120
+      i_clamp: 0.2
+    right_hand_Pinky:
+      p: 70
+      d: 23
+      i: 120
+      i_clamp: 0.2
+    right_hand_Ring_Finger:
+      p: 70
+      d: 23
+      i: 100
+      i_clamp: 0.2

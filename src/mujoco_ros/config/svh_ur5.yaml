@@ -1,0 +1,102 @@
+#Schema 
+#joints: <-- creates a JointROSConnector instance for a joint. Corresponds to a joint in the MuJoCo xml
+#- name: 
+#  control_topic:
+#  pose_topic:
+#  initpose_topic: 
+#  p_gain:
+#  d_gain:
+
+
+joints:
+- name: shoulder_lift_joint
+  control_topic: shoulder_lift_joint_control
+  pose_topic: shoulder_lift_joint_pose
+  initpose_topic: shoulder_lift_joint_initialpose
+  p_gain: 5000
+  d_gain: 250
+- name: shoulder_pan_joint
+  control_topic: shoulder_pan_joint_control
+  pose_topic: shoulder_pan_joint_pose
+  initpose_topic: shoulder_pan_joint_initialpose
+  p_gain: 5000
+  d_gain: 100
+- name: elbow_joint
+  control_topic: elbow_joint_control
+  pose_topic: elbow_joint_pose
+  initpose_topic: elbow_joint_initialpose
+  p_gain: 10000
+  d_gain: 50
+- name: wrist_1_joint
+  control_topic: wrist_1_joint_control
+  pose_topic: wrist_1_joint_pose
+  initpose_topic: wrist_1_joint_initialpose
+  p_gain: 1500
+  d_gain: 10
+- name: wrist_2_joint
+  control_topic: wrist_2_joint_control
+  pose_topic: wrist_2_joint_pose
+  initpose_topic: wrist_2_joint_initialpose
+  p_gain: 1000
+  d_gain: 450
+- name: wrist_3_joint
+  control_topic: wrist_3_joint_control
+  pose_topic: wrist_3_joint_pose
+  initpose_topic: wrist_3_joint_initialpose
+  p_gain: 1000
+  d_gain: 10
+
+- name: right_hand_Thumb_Opposition
+  control_topic: right_hand_Thumb_Opposition_control
+  pose_topic: right_hand_Thumb_Opposition_pose
+  initpose_topic: right_hand_Thumb_Opposition_initialpose
+  p_gain: 60
+  d_gain: 20
+- name: right_hand_Thumb_Flexion
+  control_topic: right_hand_Thumb_Flexion_control
+  pose_topic: right_hand_Thumb_Flexion_pose
+  initpose_topic: right_hand_Thumb_Flexion_initialpose
+  p_gain: 60
+  d_gain: 27
+- name: right_hand_Index_Finger_Proximal
+  control_topic: right_hand_Index_Finger_Proximal_control
+  pose_topic: right_hand_Index_Finger_Proximal_pose
+  initpose_topic: right_hand_Index_Finger_Proximal_initialpose
+  p_gain: 80
+  d_gain: 27
+- name: right_hand_Index_Finger_Distal
+  control_topic: right_hand_Index_Finger_Distal_control
+  pose_topic: right_hand_Index_Finger_Distal_pose
+  initpose_topic: right_hand_Index_Finger_Distal_initialpose
+  p_gain: 80
+  d_gain: 20
+- name: right_hand_Middle_Finger_Distal
+  control_topic: right_hand_Middle_Finger_Distal_control
+  pose_topic: right_hand_Middle_Finger_Distal_pose
+  initpose_topic: right_hand_Middle_Finger_Distal_initialpose
+  p_gain: 70
+  d_gain: 20
+- name: right_hand_Middle_Finger_Proximal
+  control_topic: right_hand_Middle_Finger_Proximal_control
+  pose_topic: right_hand_Middle_Finger_Proximal_pose
+  initpose_topic: right_hand_Middle_Finger_Proximal_initialpose
+  p_gain: 70
+  d_gain: 25
+- name: right_hand_Finger_Spread
+  control_topic: right_hand_Finger_Spread_control
+  pose_topic: right_hand_Finger_Spread_pose
+  initpose_topic: right_hand_Finger_Spread_initialpose
+  p_gain: 100
+  d_gain: 30
+- name: right_hand_Pinky
+  control_topic: right_hand_Pinky_control
+  pose_topic: right_hand_Pinky_pose
+  initpose_topic: right_hand_Pinky_initialpose
+  p_gain: 70
+  d_gain: 23
+- name: right_hand_Ring_Finger
+  control_topic: right_hand_Ring_Finger_control
+  pose_topic: right_hand_Ring_Finger_pose
+  initpose_topic: right_hand_Ring_Finger_initialpose
+  p_gain: 70
+  d_gain: 23

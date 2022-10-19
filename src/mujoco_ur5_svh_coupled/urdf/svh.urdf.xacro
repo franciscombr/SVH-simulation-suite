@@ -1,0 +1,1034 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  
+  <xacro:macro name="link_inertia">
+    <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="0.01" />
+        <inertia
+          ixx="0.1" ixy="0.0" ixz="0.0"
+          iyy="0.1" iyz="0.0"
+          izz="0.1" />
+    </inertial>
+  </xacro:macro>
+  
+
+  <xacro:macro name="cylinder_inertial_fingers" params="radius length mass *origin">
+    <inertial>
+      <mass value="${mass}" />
+      <xacro:insert_block name="origin" />
+      <inertia ixx="${10000*0.5 * mass * radius * radius}" ixy="0.0" ixz="0.0" iyy="${10000*0.0833333 * mass * (3 * radius * radius + length * length)}" iyz="0.0" izz="${10000*0.0833333 * mass * (3 * radius * radius + length * length)}"/>
+    </inertial>
+  </xacro:macro>
+
+  <!--
+  <xacro:macro name="cylinder_inertial_fingers" params="radius length mass *origin">
+    <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <mass value="0.01" />
+        <inertia
+          ixx="0.1" ixy="0.0" ixz="0.0"
+          iyy="0.1" iyz="0.0"
+          izz="0.1" />
+    </inertial>
+  </xacro:macro>
+  -->
+  
+  <xacro:macro name="joint_dynamics">
+  	<dynamics damping="50.5" friction="1" />
+  </xacro:macro>
+
+  <xacro:macro name="mimic_joint_plugin_gazebo" params="name_prefix parent_joint mimic_joint has_pid:=false multiplier:=1.0 offset:=0 sensitiveness:=0.0 max_effort:=1.0 robot_namespace:=''">
+    <gazebo>
+      <plugin name="${name_prefix}_mimic_joint_plugin" filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so">
+        <joint>${parent_joint}</joint>
+        <mimicJoint>${mimic_joint}</mimicJoint>
+        <xacro:if value="${has_pid}">                     <!-- if set to true, PID parameters from "/gazebo_ros_control/pid_gains/${mimic_joint}" are loaded -->
+          <hasPID />
+        </xacro:if>
+        <multiplier>${multiplier}</multiplier>
+        <offset>${offset}</offset>
+        <sensitiveness>${sensitiveness}</sensitiveness>   <!-- if absolute difference between setpoint and process value is below this threshold, do nothing; 0.0 = disable [rad] -->
+        <maxEffort>${max_effort}</maxEffort>              <!-- only taken into account if has_pid:=true [Nm] -->
+        <xacro:unless value="${robot_namespace == ''}">
+          <robotNamespace>${robot_namespace}</robotNamespace>
+        </xacro:unless>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:macro name="controller_plugin_gazebo" params="robot_namespace:=''">
+    <gazebo>
+      <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+        <xacro:unless value="${robot_namespace == ''}">
+          <robotNamespace>${robot_namespace}</robotNamespace>
+        </xacro:unless>
+        <controlPeriod>0.001</controlPeriod>
+      </plugin>
+    </gazebo>
+  </xacro:macro>
+
+  <xacro:controller_plugin_gazebo />
+  
+  <xacro:macro name="f3d_plugin_gazebo" params="robot_namespace:='' body_name">
+ 		<gazebo>
+ 			<plugin name="gazebo_ros_f3d" filename="libgazebo_ros_f3d.so">
+	 			<xacro:unless value="${robot_namespace == ''}">
+		    	<robotNamespace>${robot_namespace}</robotNamespace>
+		    </xacro:unless>
+		    <bodyName>${body_name}</bodyName>
+		    <topicName>${body_name}_f3d</topicName>
+		    <frameName>${body_name}</frameName>
+ 			</plugin>
+ 		</gazebo>
+  </xacro:macro>
+  
+
+
+  <xacro:property name="cyl_radius" value="0.001" />
+  <xacro:macro name="svh" params="parent name side *origin">
+    <!-- RIGHT HAND = 1, LEFT HAND = -1 -->
+    <!-- BASE_LINE LINKS -->
+    
+    <joint name="${name}_base_joint" type="fixed" >
+      <xacro:insert_block name="origin" />
+      <parent link="${parent}" />
+      <child link="${name}_base_link" />
+    </joint>
+    
+    <link name="${name}_base_link">
+      <xacro:insert_block name="origin" />
+      <visual>
+	<origin xyz="0 0 -0.032" rpy="0 0 0" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/base10.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<origin xyz="0 0 -0.032" rpy="0 0 0" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/base10.stl" />
+	</geometry>
+      </collision>
+      <xacro:link_inertia/>
+    </link>
+
+    <link name="${name}_d">
+      <!-- <visual> -->
+      <!-- 	<geometry> -->
+      <!-- 	  <cylinder length="0.110" radius="${cyl_radius}" /> -->
+      <!-- 	</geometry> -->
+      <!-- 	<material name="${name}_green" /> -->
+      <!-- </visual> -->
+      <xacro:link_inertia/>
+    </link>
+
+    <link name="${name}_h">
+      <!-- <visual> -->
+      <!-- 	<origin rpy="0 1.571 0" xyz="${side*(-0.0125)} 0 0.0825" /> -->
+      <!-- 	<geometry> -->
+      <!-- 	  <cylinder length="0.025" radius="${cyl_radius}" /> -->
+      <!-- 	</geometry> -->
+      <!-- 	<material name="${name}_green" /> -->
+      <!-- </visual> -->
+      <xacro:link_inertia/>
+    </link>
+
+    <link name="${name}_d2">
+      <!-- <visual> -->
+      <!-- 	<origin rpy="0 0 0" xyz="${side*(-0.025)} 0 0.09625" /> -->
+      <!-- 	<geometry> -->
+      <!-- 	  <cylinder length="0.0275" radius="${cyl_radius}" /> -->
+      <!-- 	</geometry> -->
+      <!-- 	<material name="${name}_green" /> -->
+      <!-- </visual> -->
+      <xacro:link_inertia/>
+    </link>
+
+    <!-- LENGTH NOT FOUND IN DATASHEET! GUESSED!!! -->
+    <link name="${name}_e1">
+      <visual>
+	<origin rpy="0 0 0" xyz="0 0.01313 0" />
+	<geometry>
+          <mesh scale="${side*(1)} 1 1" filename="package://mujoco_ur5_svh_coupled/meshes/h10.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<origin rpy="0 0 0" xyz="0 0.01313 0" />
+	<geometry>
+          <mesh scale="${side*(1)} 1 1" filename="package://mujoco_ur5_svh_coupled/meshes/h10.stl" />
+	</geometry>
+      </collision>
+      <xacro:link_inertia/>
+    </link>
+
+    <!-- LENGTH NOT FOUND IN DATASHEET! GUESSED!!! -->
+    <link name="${name}_e2">
+      <visual>
+	<origin xyz="${side*(-0.0007)} 0 -0.01002" />
+	<geometry>
+          <mesh scale="${side*(1)} 1 1" filename="package://mujoco_ur5_svh_coupled/meshes/h11.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<origin xyz="${side*(-0.0007)} 0 -0.01002" />
+	<geometry>
+          <mesh scale="${side*(1)} 1 1" filename="package://mujoco_ur5_svh_coupled/meshes/h11.stl" />
+	</geometry>
+      </collision>
+      <xacro:link_inertia/>
+    </link>
+
+    <!-- LENGTH NOT FOUND IN DATASHEET! GUESSED!!! -->
+    <link name="${name}_e3">
+      <!-- <visual> -->
+      <!-- 	<origin rpy="0 0 0" xyz="${side*(0.0175)} 0 0.015" /> -->
+      <!-- 	<geometry> -->
+      <!-- 	  <cylinder length="0.03" radius="${cyl_radius}" /> -->
+      <!-- 	</geometry> -->
+      <!-- 	<material name="green" /> -->
+      <!-- </visual> -->
+      <xacro:link_inertia/>
+    </link>
+
+    <link name="${name}_e">
+      <xacro:link_inertia/>
+    </link>
+
+    <!-- LENGTH NOT FOUND IN DATASHEET! GUESSED, BUT POSITION CALCULATED: E4 = D-G-F!!! -->
+    <link name="${name}_e4">
+      <!-- <visual> -->
+      <!-- 	<origin rpy="0 0 0" xyz="${side*(0.02825)} 0 0.043" /> -->
+      <!-- 	<geometry> -->
+      <!-- 	  <cylinder length="0.026" radius="${cyl_radius}" /> -->
+      <!-- 	</geometry> -->
+      <!-- 	<material name="green" /> -->
+      <!-- </visual> -->
+      <xacro:link_inertia/>
+    </link>
+
+    <!-- LENGTH NOT FOUND IN DATASHEET! GUESSED, BUT POSITION CALCULATED: E5 = D-G!!! -->
+    <link name="${name}_e5">
+      <!-- <visual> -->
+      <!-- 	<origin rpy="0 0 0" xyz="${side*(0.00675)} 0 0.04775" /> -->
+      <!-- 	<geometry> -->
+      <!-- 	  <cylinder length="0.0355" radius="${cyl_radius}" /> -->
+      <!-- 	</geometry> -->
+      <!-- 	<material name="green" /> -->
+      <!-- </visual> -->
+      <xacro:link_inertia/>
+    </link>
+
+
+    <!-- THUMB LINKS -->
+    <link name="${name}_z">
+      <visual>
+	<origin xyz="0 0 0.02442" />
+	<geometry>
+          <mesh scale="1 ${side*(1)} 1" filename="package://mujoco_ur5_svh_coupled/meshes/d10.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<origin xyz="0 0 0.02442" />
+	<geometry>
+          <mesh scale="1 ${side*(1)} 1" filename="package://mujoco_ur5_svh_coupled/meshes/d10.stl" />
+	</geometry>
+      </collision>
+      <xacro:link_inertia/>
+    </link>
+
+    <link name="${name}_virtual_a">
+      <xacro:link_inertia/>
+    </link>
+    <link name="${name}_a">
+      <visual>
+	<geometry>
+          <mesh scale="1 ${side*(1)} ${side*(1)}" filename="package://mujoco_ur5_svh_coupled/meshes/d11.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh scale="1 ${side*(1)} ${side*(1)}" filename="package://mujoco_ur5_svh_coupled/meshes/d11.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.025" mass="0.078">
+       <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_b">
+      <visual>
+	<geometry>
+          <mesh scale="1 ${side*(1)} ${side*(1)}" filename="package://mujoco_ur5_svh_coupled/meshes/d12.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh scale="1 ${side*(1)} ${side*(1)}" filename="package://mujoco_ur5_svh_coupled/meshes/d12.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.015" mass="0.0325">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_c">
+      <visual>
+	<geometry>
+          <mesh scale="1 ${side*(1)} ${side*(1)}" filename="package://mujoco_ur5_svh_coupled/meshes/d13.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh scale="1 ${side*(1)} ${side*(1)}" filename="package://mujoco_ur5_svh_coupled/meshes/d13.stl" />
+	</geometry>
+	<surface>
+        <friction>
+          <ode>
+            <mu>1</mu>
+            <mu2>1</mu2>
+          </ode>
+        </friction>
+        <contact>
+      <ode>
+        <min_depth>0.1</min_depth>
+        <max_vel>0.0</max_vel>
+      </ode>
+    </contact>
+      </surface>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.01" mass="0.2">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+
+    <!-- INDEX FINGER LINKS -->
+    <link name="${name}_virtual_l">
+      <visual>
+	<origin xyz="0 0 0.01321" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f10.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<origin xyz="0 0 0.01321" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f10.stl" />
+	</geometry>
+      </collision>
+      <xacro:link_inertia/>
+    </link>
+
+    <link name="${name}_l">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f11.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f11.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.030" mass="0.2">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_p">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f12.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f12.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.02" mass="0.2">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_t">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f13.stl" />
+	</geometry>
+      </visual>
+      <collision name="index_collision">
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f13.stl" />
+	</geometry>
+	<surface>
+        <friction>
+          <ode>
+            <mu>1</mu>
+            <mu2>1</mu2>
+          </ode>
+        </friction>
+        <contact>
+      <ode>
+        <min_depth>0.1</min_depth>
+        <max_vel>0.0</max_vel>
+        
+      </ode>
+    </contact>
+      </surface>
+      </collision>
+      	
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.015" mass="0.2">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+      
+      
+    </link>
+
+
+    <!-- MIDDLE FINGER LINKS -->
+    <link name="${name}_virtual_k">
+      <visual>
+	<origin xyz="0 0 0.01321" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f20.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<origin xyz="0 0 0.01321" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f20.stl" />
+	</geometry>
+      </collision>
+      <xacro:link_inertia/>
+    </link>
+
+    <link name="${name}_k">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f21.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f21.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.035" mass="0.078">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_o">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f22.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f22.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.02" mass="0.0325">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_s">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f23.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f23.stl" />
+	</geometry>
+	<surface>
+        <friction>
+          <ode>
+            <mu>1</mu>
+            <mu2>1</mu2>
+          </ode>
+        </friction>
+        <contact>
+      <ode>
+        <min_depth>0.1</min_depth>
+        <max_vel>0.0</max_vel>
+      </ode>
+    </contact>
+      </surface>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.015" mass="0.0195">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+
+    <!-- RING FINGER LINKS -->
+    <link name="${name}_virtual_j">
+      <visual>
+	<origin xyz="0 0 -0.01321" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f30.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<origin xyz="0 0 -0.01321" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f30.stl" />
+	</geometry>
+      </collision>
+      <xacro:link_inertia/>
+    </link>
+
+    <link name="${name}_j">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f31.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f31.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.035" mass="0.078">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_n">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f32.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f32.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.020" mass="0.0325">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_r">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f33.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f33.stl" />
+	</geometry>
+	<surface>
+        <friction>
+          <ode>
+            <mu>1</mu>
+            <mu2>1</mu2>
+          </ode>
+        </friction>
+        <contact>
+      <ode>
+        <min_depth>0.1</min_depth>
+        <max_vel>0.0</max_vel>
+      </ode>
+    </contact>
+      </surface>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.015" mass="0.0195">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+
+    <!-- LITTLE FINGER LINKS -->
+    <link name="${name}_virtual_i">
+      <visual>
+	<origin xyz="0 0 -0.01321" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f40.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<origin xyz="0 0 -0.01321" />
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f40.stl" />
+	</geometry>
+      </collision>
+      <xacro:link_inertia/>
+    </link>
+
+    <link name="${name}_i">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f41.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f41.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.035" mass="0.078">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_m">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f42.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f42.stl" />
+	</geometry>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.020" mass="0.0325">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+    <link name="${name}_q">
+      <visual>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f43.stl" />
+	</geometry>
+      </visual>
+      <collision>
+	<geometry>
+          <mesh filename="package://mujoco_ur5_svh_coupled/meshes/f43.stl" />
+	</geometry>
+	<surface>
+        <friction>
+          <ode>
+            <mu>1</mu>
+            <mu2>1</mu2>
+          </ode>
+        </friction>
+        <contact>
+      <ode>
+        <min_depth>0.1</min_depth>
+        <max_vel>0.0</max_vel>
+      </ode>
+    </contact>
+      </surface>
+      </collision>
+      <xacro:cylinder_inertial_fingers radius="0.0196" length="0.015" mass="0.0195">
+        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+      </xacro:cylinder_inertial_fingers>
+    </link>
+
+
+    <joint name="${name}_Thumb_Flexion" type="revolute">
+      <parent link="${name}_virtual_a" />
+      <child link="${name}_a" />
+      <limit effort="10.0" lower="0.0" upper="0.9704" velocity="1" />
+      <origin xyz="0 0 0" rpy="0 0 ${side*(-0.9704)}" />
+      <axis xyz="0 0 ${side*(1)}" />
+      <xacro:joint_dynamics/>
+    </joint>
+    
+    <joint name="${name}_Thumb_Helper" type="fixed">
+      <parent link="${name}_z" />
+      <child link="${name}_virtual_a" />
+      <origin xyz="0 0 0.04596" rpy="0 -1.5707 3.1416" />
+    </joint>
+
+
+    <!-- BASE_LINE JOINTS -->
+    <joint name="${name}_Thumb_Opposition" type="revolute">
+      <parent link="${name}_e1" />
+      <child link="${name}_z" />
+      <limit effort="10.0" lower="0.0" upper="0.9879" velocity="1" />
+      <origin xyz="${side*(-0.01690)} 0.02626 0" rpy="0 0.2618 1.571" />
+      <axis xyz="0 0 ${side*(-1)}" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <!-- JOINT NOT FOR BASE_LINE. BUT WRITTEN DOWN HERE FOR BETTER UX -->
+
+    <joint name="${name}_f1" type="fixed">
+      <parent link="${name}_e1" />
+      <child link="${name}_d" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <joint name="${name}_f2" type="fixed">
+      <parent link="${name}_d" />
+      <child link="${name}_h" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <joint name="${name}_f3" type="fixed">
+      <parent link="${name}_h" />
+      <child link="${name}_d2" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <joint name="${name}_f4" type="fixed">
+      <parent link="${name}_base_link" />
+      <child link="${name}_e1" />
+      <origin xyz="0 -0.01313 0" rpy="0 0 0" />
+    </joint>
+
+    <joint name="${name}_j5" type="revolute">
+      <parent link="${name}_e1" />
+      <child link="${name}_e2" />
+      <limit effort="10.0" lower="0.0" upper="0.98786" velocity="1" />
+      <origin xyz="${side*(0.01840)} 0.006 0.0375" rpy="0 0 0" />
+      <axis xyz="0 0 ${side*(1)}" />
+      <mimic joint="${name}_Thumb_Opposition" multiplier="1" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_j5"
+    parent_joint="${name}_Thumb_Opposition" mimic_joint="${name}_j5"
+    has_pid="false" multiplier="1" max_effort="10.0" />
+
+    <joint name="${name}_f5" type="fixed">
+      <parent link="${name}_e2" />
+      <child link="${name}_e3" />
+      <origin xyz="0 -0.0060 0" rpy="0 0 0" />
+    </joint>
+
+    <joint name="${name}_f6" type="fixed">
+      <parent link="${name}_e3" />
+      <child link="${name}_e" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <joint name="${name}_f7" type="fixed">
+      <parent link="${name}_e" />
+      <child link="${name}_e4" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <joint name="${name}_f8" type="fixed">
+      <parent link="${name}_e" />
+      <child link="${name}_e5" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
+    </joint>
+
+    <!-- THUMB JOINTS -->
+    <joint name="${name}_j3" type="revolute">
+      <parent link="${name}_a" />
+      <child link="${name}_b" />
+      <limit effort="10.0" lower="0.0" upper="0.98506" velocity="1" />
+      <origin xyz="0.0485 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 ${side*(1)}" />
+      <mimic joint="${name}_Thumb_Flexion" multiplier="1.01511" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_j3"
+    parent_joint="${name}_Thumb_Flexion" mimic_joint="${name}_j3"
+    has_pid="false" multiplier="1.01511" max_effort="10.0" />
+
+    <joint name="${name}_j4" type="revolute">
+      <parent link="${name}_b" />
+      <child link="${name}_c" />
+      <limit effort="10.0" lower="0.0" upper="1.406" velocity="1" />
+      <origin xyz="0.030 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 ${side*(1)}" />
+      <mimic joint="${name}_Thumb_Flexion" multiplier="1.44889" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_j4"
+    parent_joint="${name}_Thumb_Flexion" mimic_joint="${name}_j4"
+    has_pid="false" multiplier="1.44889" max_effort="10.0" />
+
+    <!-- INDEX FINGER JOINTS -->
+    <joint name="${name}_Index_Finger_Distal" type="revolute">
+      <parent link="${name}_l" />
+      <child link="${name}_p" />
+      <limit effort="10.0" lower="0" upper="1.334" velocity="1" />
+      <origin xyz="0.04804 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <joint name="${name}_Index_Finger_Proximal" type="revolute">
+      <parent link="${name}_virtual_l" />
+      <child link="${name}_l" />
+      <limit effort="10.0" lower="0.0" upper="0.79849" velocity="1" />
+      <origin xyz="0 0 0" rpy="-1.5707 0 0" />
+      <axis xyz="0 0 1" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <!-- JOINT Finger_Spread in BASE_LINE section for better UX -->
+    <joint name="${name}_j14" type="revolute">
+      <parent link="${name}_p" />
+      <child link="${name}_t" />
+      <limit effort="10.0" lower="0" upper="1.394" velocity="1" />
+      <origin xyz="0.026 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <mimic joint="${name}_Index_Finger_Distal" multiplier="1.0450" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+	
+				
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_j14"
+    parent_joint="${name}_Index_Finger_Distal" mimic_joint="${name}_j14"
+    has_pid="false" multiplier="1.0450" max_effort="10.0" />
+    
+
+    <!-- MIDDLE FINGER JOINTS -->
+    <joint name="${name}_Middle_Finger_Proximal" type="revolute">
+      <parent link="${name}_virtual_k" />
+      <child link="${name}_k" />
+      <limit effort="10.0" lower="0.0" upper="0.79849" velocity="1" />
+      <origin xyz="0 0 0" rpy="-1.5707 0 0" />
+      <axis xyz="0 0 1" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <joint name="${name}_Middle_Finger_Distal" type="revolute">
+      <parent link="${name}_k" />
+      <child link="${name}_o" />
+      <limit effort="10.0" lower="0" upper="1.334" velocity="1" />
+      <origin xyz="0.05004 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <joint name="${name}_j15" type="revolute">
+      <parent link="${name}_o" />
+      <child link="${name}_s" />
+      <limit effort="10.0" lower="0" upper="1.334" velocity="1" />
+      <origin xyz="0.032 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <mimic joint="${name}_Middle_Finger_Distal" multiplier="1.0454" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_j15"
+    parent_joint="${name}_Middle_Finger_Distal" mimic_joint="${name}_j15"
+    has_pid="false" multiplier="1.0454" max_effort="10.0" />
+
+    <!-- RING FINGER JOINTS -->
+    <joint name="${name}_Ring_Finger" type="revolute">
+      <parent link="${name}_virtual_j" />
+      <child link="${name}_j" />
+      <limit effort="10.0" lower="0.0" upper="0.98175" velocity="1" />
+      <origin xyz="0 0 0" rpy="1.5707 0 0" />
+      <axis xyz="0 0 1" />
+      <xacro:joint_dynamics/>
+    </joint>
+    
+    <joint name="${name}_j12" type="revolute">
+      <parent link="${name}_j" />
+      <child link="${name}_n" />
+      <limit effort="10.0" lower="0" upper="1.334" velocity="1" />
+      <origin xyz="0.05004 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <mimic joint="${name}_Ring_Finger" multiplier="1.3588" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_j12"
+    parent_joint="${name}_Ring_Finger" mimic_joint="${name}_j12"
+    has_pid="false" multiplier="1.3588" max_effort="10.0" />
+
+    <joint name="${name}_j16" type="revolute">
+      <parent link="${name}_n" />
+      <child link="${name}_r" />
+      <limit effort="10.0" lower="0" upper="1.395" velocity="1" />
+      <origin xyz="0.032 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <mimic joint="${name}_Ring_Finger" multiplier="1.42093" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_j16"
+    parent_joint="${name}_Ring_Finger" mimic_joint="${name}_j16"
+    has_pid="false" multiplier="1.42093" max_effort="10.0" />
+
+    <!-- PINKY JOINTS -->
+    <joint name="${name}_Pinky" type="revolute">
+      <parent link="${name}_virtual_i" />
+      <child link="${name}_i" />
+      <limit effort="10.0" lower="0.0" upper="0.98175" velocity="1" />
+      <origin xyz="0 0 0" rpy="1.5707 0 0" />
+      <axis xyz="0 0 1" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <joint name="${name}_j13" type="revolute">
+      <parent link="${name}_i" />
+      <child link="${name}_m" />
+      <limit effort="10.0" lower="0" upper="1.334" velocity="1" />
+      <origin xyz="0.04454 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <mimic joint="${name}_Pinky" multiplier="1.35880" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_j13"
+    parent_joint="${name}_Pinky" mimic_joint="${name}_j13"
+    has_pid="false" multiplier="1.35880" max_effort="10.0" />
+
+    <joint name="${name}_j17" type="revolute">
+      <parent link="${name}_m" />
+      <child link="${name}_q" />
+      <limit effort="10.0" lower="0" upper="1.3971" velocity="1" />
+      <origin xyz="0.022 0 0" rpy="0 0 0" />
+      <axis xyz="0 0 1" />
+      <mimic joint="${name}_Pinky" multiplier="1.42307" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_j17"
+    parent_joint="${name}_Pinky" mimic_joint="${name}_j17"
+    has_pid="false" multiplier="1.42307" max_effort="10.0" />
+
+
+    <joint name="${name}_index_spread" type="revolute">
+      <parent link="${name}_d2" />
+      <child link="${name}_virtual_l" />
+      <limit effort="10.0" lower="0.0" upper="0.28833" velocity="1" />
+      <origin xyz="${side*(-0.025)} 0 0.110" rpy="0 -1.5707 1.5707" />
+      <axis xyz="0 0 ${side*(1)}" />
+      <mimic joint="${name}_Finger_Spread" multiplier="0.5" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_index_spread"
+    parent_joint="${name}_Finger_Spread" mimic_joint="${name}_index_spread"
+    has_pid="false" multiplier="0.5" max_effort="10.0" />
+
+    <joint name="${name}_middle_spread_dummy" type="fixed">
+      <parent link="${name}_d" />
+      <child link="${name}_virtual_k" />
+      <origin xyz="0 0 0.110" rpy="0 -1.5707 1.5707" />
+    </joint>
+
+
+    <joint name="${name}_ring_spread" type="revolute">
+      <parent link="${name}_e5" />
+      <child link="${name}_virtual_j" />
+      <limit effort="10.0" lower="0.0" upper="0.28833" velocity="1" />
+      <origin xyz="${side*(0.003855)} 0 0.0655" rpy="-1.5707 -1.5707 0" />
+      <axis xyz="0 0 ${side*(1)}" />
+      <mimic joint="${name}_Finger_Spread" multiplier="0.5" offset="0" />
+      <xacro:joint_dynamics/>
+    </joint>
+
+    <xacro:mimic_joint_plugin_gazebo name_prefix="${name}_ring_spread"
+    parent_joint="${name}_Finger_Spread" mimic_joint="${name}_ring_spread"
+    has_pid="false" multiplier="0.5" max_effort="10.0" />
+
+    <joint name="${name}_Finger_Spread" type="revolute">
+      <parent link="${name}_e4" />
+      <child link="${name}_virtual_i" />
+      <limit effort="10.0" lower="0.0" upper="0.5829" velocity="1" />
+      <origin xyz="${side*(0.025355)} 0 0.056" rpy="-1.5707 -1.5707 0" />
+      <axis xyz="0 0 ${side*(1)}" />
+      <xacro:joint_dynamics/>
+    </joint>    
+
+    <!-- Transmissions -->
+    <transmission name="thumb_flexion_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_Thumb_Flexion">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="thumb_flexion_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+ <transmission name="thumb_opposition_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_Thumb_Opposition">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="thumb_opposition_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="index_distal_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_Index_Finger_Distal">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="index_distal_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="index_proximal_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_Index_Finger_Proximal">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="index_proximal_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="middle_proximal_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_Middle_Finger_Proximal">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="middle_proximal_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="middle_distal_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_Middle_Finger_Distal">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="middle_distal_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="ring_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_Ring_Finger">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="ring_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <transmission name="pinky_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_Pinky">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="pinky_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+    <transmission name="spread_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${name}_Finger_Spread">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="spread_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+  	
+  <xacro:f3d_plugin_gazebo body_name="${name}_t"/>
+  
+</xacro:macro>
+</robot>
+
